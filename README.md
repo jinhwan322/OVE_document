@@ -82,21 +82,26 @@ flowchart LR
 ```
 
 ```mermaid
-stateDiagram-v2
-    [*] --> Idle
-    Idle --> Move : 사거리 안에 타겟 없음
-    Move --> Idle : 한 칸 이동 완료
-    Idle --> Attack : 일반 공격 쿨타임 완료
-    Idle --> ActiveSkill : 대기열 차례 (필살기)
-    Idle --> Passive : 발동 조건 충족
-    Attack --> Idle : 애니메이션 종료
-    ActiveSkill --> Idle : 컷신 / 스킵 처리 종료
-    Passive --> Idle : 애니메이션 종료
-    Idle --> Stun : 스턴 디버프
-    Stun --> Idle : 지속 시간 종료
-    Idle --> Death : HP 0
-    Death --> [*]
+flowchart LR
+    Start(( )) --> Idle
+    Idle -->|타겟 없음| Move
+    Idle -->|쿨타임 완료| Attack
+    Idle -->|대기열 차례| ActiveSkill
+    Idle -->|조건 충족| Passive
+    Idle -->|스턴| Stun
+    Idle -->|HP 0| Death
+    Move & Attack & ActiveSkill & Passive & Stun -.-> Idle
+    Death --> End(( ))
 ```
+
+| 상태 | 진입 조건 | 종료 → Idle |
+| --- | --- | --- |
+| Move | 사거리 안에 타겟 없음 | 한 칸 이동 완료 |
+| Attack | 일반 공격 쿨타임 완료 | 공격 애니메이션 종료 |
+| ActiveSkill | 스킬 대기열 차례 (필살기) | 컷신 / 스킵 처리 종료 |
+| Passive | 패시브 발동 조건 충족 | 패시브 애니메이션 종료 |
+| Stun | 스턴 디버프 | 지속 시간 종료 |
+| Death | HP 0 | — |
 
 - **IdleGameManager**: 유닛 생성, 진형 배정, 고정 틱 진행, 액티브 스킬 대기열, 컷신·영상 재생, 승패 판정
 - **IdleOwner / ObjectBase**: 전투 유닛. 스탯·버프 계산(ObjectBase)과 이동·타겟팅·공격·피격(IdleOwner)
